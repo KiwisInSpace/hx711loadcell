@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import sys
-import numpy  # sudo apt-get python-numpy
+import numpy  # sudo apt-get install python-numpy
 
 class HX711:
     def __init__(self, dout, pd_sck, gain=128):
