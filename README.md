@@ -13,4 +13,5 @@ There is an improved version of underdoeg's one here: "https://gist.github.com/i
 Instructions
 ------------
 
-Check example.py to see how it works.
+Check example.py to see how it works. Note the assigned GPIO pins and refer to the comments.
+
