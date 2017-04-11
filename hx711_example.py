@@ -1,7 +1,11 @@
-import RPi.GPIO as GPIO
-import time
 import sys
+import time
+import datetime
+import sqlite3
+import RPi.GPIO as GPIO
+
 from hx711 import HX711
+
 
 def cleanAndExit():
     print "Cleaning..."
@@ -11,6 +15,9 @@ def cleanAndExit():
 
 # GPIO pins for dout, pd_sck
 hx = HX711(5, 6)
+
+# sqlite3 DB
+db_filename = 'loadcell.db'
 
 # I've found out that, for some reason, the order of the bytes is not always the same between versions of python, numpy and the hx711 itself.
 # Still need to figure out why does it change.
@@ -41,13 +48,20 @@ while True:
         #binary_string = hx.get_binary_string()
         #print binary_string + " " + np_arr8_string
         
-        # Prints the weight. Comment if you're debbuging the MSB and LSB issue.
-        val = hx.get_weight(times=32)
-        print round(val, -1)
+        # Get the weight. Comment if you're debbuging the MSB and LSB issue.
+        val = round(hx.get_weight(times=32), -1)
 
         hx.power_down()
-        hx.power_up()
+
+        with sqlite3.connect(db_filename) as conn:
+            datet = datetime.datetime.now()
+            comment = ''
+            print val, datet
+            conn.execute('INSERT INTO loadcellSample (weight, comment, sampleDateTime) VALUES (%s, "%s", "%s")' % (int(val), str(comment), str(datet)))
+            conn.commit()
+
         time.sleep(1.0)
+        hx.power_up()
+
     except (KeyboardInterrupt, SystemExit):
         cleanAndExit()
-        
